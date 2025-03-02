@@ -1,3 +1,5 @@
+import unittest
+
 def caesarCipher(s, k):
     def transform(char):
         if char.islower():
@@ -11,40 +13,99 @@ def caesarCipher(s, k):
     
     return "".join(map(transform, characters))
 
-def test_caesarCipher():
-    # lowercase
-    assert caesarCipher("abc", 2) == "cde"
-    assert caesarCipher("xyz", 2) == "zab"  # 'z' -> 'a'
-    assert caesarCipher("morning", 5) == "rtwsnsl"
+class TestCaesarCipherFunction(unittest.TestCase):
 
-    # uppercase
-    assert caesarCipher("ABC", 3) == "DEF"
-    assert caesarCipher("XYZ", 3) == "ABC"  # 'Z' -> 'A'
-    assert caesarCipher("MORNING", 7) == "TVYUPUN"
+    def test_lowercase(self):
+        test_cases = [
+            ("abc", 2, "cde"),
+            ("xyz", 2, "zab"),
+            ("morning", 5, "rtwsnsl")
+        ]
 
-    # mixed case
-    assert caesarCipher("GoodMorning", 4) == "KsshQsvrmrk"
+        for s, k, expected in test_cases:
+            with self.subTest(s=s, k=k):
+                self.assertEqual(caesarCipher(s, k), expected)
 
-    # special characters
-    assert caesarCipher("Hello, World!", 3) == "Khoor, Zruog!"
-    assert caesarCipher("123-456!", 5) == "123-456!"
+    def test_uppercase(self):
+        test_cases = [
+            ("ABC", 3, "DEF"),
+            ("XYZ", 3, "ABC"),
+            ("MORNING", 7, "TVYUPUN")
+        ]
 
-    # k = 0 (ค่าคงเดิม)
-    assert caesarCipher("NoChange", 0) == "NoChange"
+        for s, k, expected in test_cases:
+            with self.subTest(s=s, k=k):
+                self.assertEqual(caesarCipher(s, k), expected)
 
-    # k > 26 (ผลลัพธ์ต้องเหมือน k % 26)
-    assert caesarCipher("abc", 26) == "abc"  # 26 คือรอบเต็ม
-    assert caesarCipher("xyz", 28) == "zab"  # 28 % 26 = 2
-    assert caesarCipher("ABC", 52) == "ABC"  # 52 % 26 = 0 (ไม่เปลี่ยนแปลง)
+    def test_mixed_case(self):
+        test_cases = [
+            ("GoodMorning", 4, "KsshQsvrmrk")
+        ]
 
-    # k เป็นค่าลบ (reverse)
-    assert caesarCipher("def", -2) == "bcd"
-    assert caesarCipher("XYZ", -3) == "UVW"
-    assert caesarCipher("aBc", -1) == "zAb"  # เลื่อนย้อนกลับจาก 'a' -> 'z'
+        for s, k, expected in test_cases:
+            with self.subTest(s=s, k=k):
+                self.assertEqual(caesarCipher(s, k), expected)
 
-    # Empty string
-    assert caesarCipher("", 5) == ""
+    def test_special_characters(self):
+        test_cases = [
+            ("Hello, World!", 3, "Khoor, Zruog!"),
+            ("123-456!", 5, "123-456!")
+        ]
 
-    print("All test cases passed!")
+        for s, k, expected in test_cases:
+            with self.subTest(s=s, k=k):
+                self.assertEqual(caesarCipher(s, k), expected)
 
-test_caesarCipher()
+    def test_k_zero(self):
+        test_cases = [
+            ("NoChange", 0, "NoChange")
+        ]
+
+        for s, k, expected in test_cases:
+            with self.subTest(s=s, k=k):
+                self.assertEqual(caesarCipher(s, k), expected)
+
+    def test_k_greater_than_26(self):
+        test_cases = [
+            ("abc", 26, "abc"),
+            ("xyz", 28, "zab"),
+            ("ABC", 52, "ABC")
+        ]
+
+        for s, k, expected in test_cases:
+            with self.subTest(s=s, k=k):
+                self.assertEqual(caesarCipher(s, k), expected)
+
+    def test_k_negative(self):
+        test_cases = [
+            ("def", -2, "bcd"),
+            ("XYZ", -3, "UVW"),
+            ("aBc", -1, "zAb")
+        ]
+
+        for s, k, expected in test_cases:
+            with self.subTest(s=s, k=k):
+                self.assertEqual(caesarCipher(s, k), expected)
+
+    def test_empty_string(self):
+        test_cases = [
+            ("", 5, "")
+        ]
+
+        for s, k, expected in test_cases:
+            with self.subTest(s=s, k=k):
+                self.assertEqual(caesarCipher(s, k), expected)
+
+def main():
+    suite = unittest.TestLoader().loadTestsFromTestCase(TestCaesarCipherFunction)
+    runner = unittest.TextTestRunner(verbosity=2)
+    results = runner.run(suite)
+    
+    total_tests = results.testsRun
+    passed_tests = total_tests - len(results.failures) - len(results.errors)
+    percentage_passed = (passed_tests / total_tests) * 100 if total_tests > 0 else 0
+    
+    print(f"Test Passed: {passed_tests} จาก {total_tests} ({percentage_passed:.2f}%)")
+
+if __name__ == '__main__':
+    main()
